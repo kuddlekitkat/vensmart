@@ -1,11 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:testmanga/models/category.dart';
 import 'package:testmanga/models/transaction.dart';
 
-import '../models/product.dart';
+import '../models/auth_response/auth_response.dart';
+// import '../models/product.dart';
+import '../models/product_response/product.dart';
+import '../models/product_response/product_response.dart';
 
 class ApiService {
   late String token;
@@ -20,7 +24,7 @@ class ApiService {
 
   Future<List<Category>> fetchCategories() async {
     http.Response response = await http.get(
-      Uri.parse(baseUrl + 'categories'),
+      Uri.parse('${baseUrl}categories'),
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token'
@@ -33,7 +37,7 @@ class ApiService {
   }
 
   Future<Category> addCategory(String name) async {
-    String uri = baseUrl + 'categories';
+    String uri = '${baseUrl}categories';
 
     http.Response response = await http.post(Uri.parse(uri),
         headers: {
@@ -51,7 +55,7 @@ class ApiService {
   }
 
   Future<Category> updateCategory(Category category) async {
-    String uri = baseUrl + 'categories/' + category.id.toString();
+    String uri = '${baseUrl}categories/${category.id}';
 
     http.Response response = await http.put(Uri.parse(uri),
         headers: {
@@ -69,7 +73,7 @@ class ApiService {
   }
 
   Future<void> deleteCategory(id) async {
-    String uri = baseUrl + 'categories/' + id.toString();
+    String uri = '${baseUrl}categories/$id';
     http.Response response = await http.delete(
       Uri.parse(uri),
       headers: {
@@ -85,7 +89,7 @@ class ApiService {
 
   Future<List<Transaction>> fetchTransactions() async {
     http.Response response = await http.get(
-      Uri.parse(baseUrl + 'transactions'),
+      Uri.parse('${baseUrl}transactions'),
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
         HttpHeaders.authorizationHeader: 'Bearer $token'
@@ -94,11 +98,14 @@ class ApiService {
 
     List transactions = jsonDecode(response.body);
 
-    return transactions.map((transaction) => Transaction.fromJson(transaction)).toList();
+    return transactions
+        .map((transaction) => Transaction.fromJson(transaction))
+        .toList();
   }
 
-  Future<Transaction> addTransaction(String amount, String category, String description, String date) async {
-    String uri = baseUrl + 'transactions';
+  Future<Transaction> addTransaction(
+      String amount, String category, String description, String date) async {
+    String uri = '${baseUrl}transactions';
 
     http.Response response = await http.post(Uri.parse(uri),
         headers: {
@@ -121,7 +128,7 @@ class ApiService {
   }
 
   Future<Transaction> updateTransaction(Transaction transaction) async {
-    String uri = baseUrl + 'transactions/' + transaction.id.toString();
+    String uri = '${baseUrl}transactions/${transaction.id}';
 
     http.Response response = await http.put(Uri.parse(uri),
         headers: {
@@ -144,7 +151,7 @@ class ApiService {
   }
 
   Future<void> deleteTransaction(id) async {
-    String uri = baseUrl + 'transactions/' + id.toString();
+    String uri = '${baseUrl}transactions/$id';
     http.Response response = await http.delete(
       Uri.parse(uri),
       headers: {
@@ -158,21 +165,40 @@ class ApiService {
     }
   }
 
-  Future<String> register(String name, String email, String password,
+  Future<AuthResponse> register(String name, String email, String password,
       String passwordConfirm, String deviceName) async {
-    String uri = productUrl + 'register';
+    String uri = '${productUrl}register';
 
     http.Response response = await http.post(Uri.parse(uri),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
           HttpHeaders.acceptHeader: 'application/json',
         },
+        /*    body: jsonEncode({
+        /// TODO: MAKE THIS TYPE ID FIELD DYNAMIC
+        'type': 23,
+        'name': name,
+        'email': email,
+        'password': password,
+        'password_confirmation': passwordConfirm,
+        'device_name': deviceName
+      }), */
+
+        /// TODO: MAKE All THIS FIELDS DYNAMIC
+
         body: jsonEncode({
-          'name': name,
-          'email': email,
-          'password': password,
-          'password_confirmation': passwordConfirm,
-          'device_name': deviceName
+          "type": 903,
+          "device_id": "123123132133324",
+          "device_type": "ios",
+          "device_name": "iphone 12",
+          "device_token":
+              "fWmhg-bbSfGEqOoHZkKCmj:APA91bGpk7jbGRVP75GFgf0g65_mDjYpWI259vsgAlcm_3EXqVI-h4n069lhPC1euSKSuUfDolkUZnW6OXIN7oQc3YpMeUPYUeXi9AgHAGEg_SE9xmtlrRhdnf2PSVpEM73flWRxi3vxV1",
+          "name": "David Adokuru1",
+          "email": "gsdfsdf@gmail.com",
+          "mobile": "9054354353453",
+          "password": "Mypassword12",
+          "state": "FCT",
+          "town": "Abuja"
         }));
 
     if (response.statusCode == 422) {
@@ -188,21 +214,32 @@ class ApiService {
     }
 
     // return token
-    return response.body;
+    return AuthResponse.fromJson(json.decode(response.body));
   }
 
-  Future<String> login(String email, String password, String deviceName) async {
-    String uri = productUrl + 'login';
+  Future<AuthResponse> login(
+      String email, String password, String deviceName) async {
+    String uri = '${productUrl}login';
 
     http.Response response = await http.post(Uri.parse(uri),
         headers: {
           HttpHeaders.contentTypeHeader: 'application/json',
           HttpHeaders.acceptHeader: 'application/json',
         },
+
+        /// TODO: MAKE All THIS FIELDS DYNAMIC
+
         body: jsonEncode({
-          'email': email,
-          'password': password,
-          'device_name': deviceName
+          "type": 1,
+          "device_id": "12312313213",
+          "device_type": "ios",
+          "device_name": "iphone 12",
+          "device_token":
+              "fWmhg-bbSfGEqOoHZkKCmj:APA91bGpk7jbGRVP75GFgf0g65_mDjYpWI259vsgAlcm_3EXqVI-h4n069lhPC1euSKSuUfDolkUZnW6OXIN7oQc3YpMeUPYUeXi9AgHAGEg_SE9xmtlrRhdnf2PSVpEM73flWRxivxV",
+          "username": "08055636587",
+          "email": "davidadokuru1@gmail.com",
+          "mobile": "08055636587",
+          "password": "Mypassword12"
         }));
 
     if (response.statusCode == 422) {
@@ -218,30 +255,25 @@ class ApiService {
     }
 
     // return token
-    return response.body;
+    return AuthResponse.fromJson(json.decode(response.body));
   }
 
-
-
-
-    Future<List<Product>> fetchProducts() async {
-
-
-
+  Future<ProductResponse> fetchProducts() async {
     http.Response response = await http.get(
-      Uri.parse(productUrl + 'product_details/8'),
+      Uri.parse('${productUrl}products/1'),
       headers: {
         HttpHeaders.acceptHeader: 'application/json',
-        HttpHeaders.authorizationHeader: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiM2UwZWRiOGU0NjcxODIxMTlkYTE3NzU0Y2VmMmU2ZGNkZGVjOTRmNzNmMmY1YWI4MGUzMzc3NzcxYjZjMmIzZTBkZGI2MmY1NmVjYmRlNDEiLCJpYXQiOjE2NzAxODM0OTUuNDk2MDgzLCJuYmYiOjE2NzAxODM0OTUuNDk2MDksImV4cCI6MTcwMTcxOTQ5NS40NzY5NjUsInN1YiI6IjMzMCIsInNjb3BlcyI6W119.JYHgcJnAmBW6kuh4mitw6Wrx5p8GHS8zGKqs8TGo_L83FD7QeH9n5hbXvr07z-nGqIjj7mhiAZ3mu5qf40-1Q-N3AUv5DBUGoj2zfWYPh27X6lD-St-1OfwTjeUHf_WFvKSAcUlVlmjo8SkW7bMyWjKjuupoSlYbAIJPKXDHnjM3g79x3I_Yk7_aBvlIy_uhmZl7sdE-17bAvdAhvD9CYBnHMN0mbFA7R1P0miHV6W53N5girpK6WhajhLFjYjBSG6eMa2FtYzTbtccbk4T8s34kleIXxJiwT-4mG5N1hRyjMPlAhV5X9K0MiqmfukVK0BKFQHWJSd-Dsl3i4RyhmSEaPSt1KvfjGse9Q9xdKoZHcyKCHx_mSW0oWTvIhGy_0yO0C_dYVdKlMEftIdZR3ThqxBdlMIgxz2ocz8XX0VGy2CcixTLcWf2z7-Cvh3y-NG5WGD11L8bSTPFAny_Dcsp1-PZ4o73C-dJje7zjTN6dB2gD-jusL5fWh0gICwbdGHEBspkM4en2scknzb2-xMsach8Aj-n_QUCCYTCWDfyka66meC-_49JD43RNnRETHaF7F9PBi78fKzqYUH2yQgAtMI26NKfidyCzBXfi40vlwmYFxjVwqL9Db23J8CSGF8Cmel8aS5veAsqVAq30Tw8D3iecghENXA1g36pcaoQ'
+        HttpHeaders.authorizationHeader:
+            'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNzNhNjlkMDk2YWEyYjIzZGExOWI0Zjk4NzRmN2E4ZWY3ZDQzNjkwODhjMjQ5NWZiNTZjYjNmYzdhZTc4NTA3NjRjNzg0NjQzMTU1ODIyZGYiLCJpYXQiOjE2NzAzNTg4MTAuNTQ5NTMyLCJuYmYiOjE2NzAzNTg4MTAuNTQ5NTM3LCJleHAiOjE3MDE4OTQ4MTAuNTM2MzgsInN1YiI6IjMzNyIsInNjb3BlcyI6W119.IkNzLfeh57SvSgRuky6awpmQFWLMUKClCh76g2yASWyElij5BxnyJBeJzaoVoRkADeB0a0RZBwpqTdIA1Jtz7gRDNRxATMEr1XuBb2oubrwix1B5nwlIpJxRKVKA1ttn6yVRLt_AnqfM7iBV0nxmV_W_Z7D0Pw0qyzENlI2GEWxFXRTGoen4sDVs9kQdYtx0l5X80lOdhtoKGBMUj4PWyGpalJev8hi-7S-lZwDfW32eO5FDH--E-Tw_tqd6ZpbHEekDRJI6tGFtpkY18hJr_QREfJIV8Lvbzkv3wvv44U5rhBweMbvF-6ckS6pCqhoN_F3PmZYZBVoE7FHJxMqCuq9D59IOxofbuEartRog6Vbr5tU3u8s3jtNPDJHVuqv8dhnM77YtdzgvE0lcMEV-fNkbHGlLle0JE7_QCIF_SdGgEuA7S-6vIXUv423s45peJGqX0ybfodXLLJnq32cT0P9fvfmR2fXROYbhEc0P2S0pOvS7a-qZzImr7EgtpI5En7q897Yma99CubNfzx0phF_y2m2a8yszErWoW4Ef8pHW_FsVH2bXnGgowqjjjWBDbUa_e9kZow4LcP_iBOhiNLssjyCj2IEEAwiGzX0_9Zh_ILipcBDUGdbSTQuntBs70awNfXZhSeCuSgxDpBcHPw8SDpg1fVJpYi4DTpBom20'
       },
     );
 
-    final extractedData = jsonDecode(response.body)['data'];
-    print(extractedData);
-    List products = jsonDecode(extractedData);
+    print('Jaycee was here: ${response.body}');
 
-    print(products.length);
-    return products.map((product) => Product.fromJson(product)).toList();
+    // final extractedData = jsonDecode(response.body)['data'];
+    // print(extractedData);
+    // List products = jsonDecode(extractedData);
 
-     }
-    }
+    return ProductResponse.fromJson(json.decode(response.body));
+  }
+}

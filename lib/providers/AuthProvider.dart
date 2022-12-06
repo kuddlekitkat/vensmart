@@ -3,7 +3,6 @@ import 'package:testmanga/services/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider extends ChangeNotifier {
-
   bool isAuthenticated = false;
   late String token;
   late ApiService apiService;
@@ -23,15 +22,26 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> register(String name, String email, String password,
       String passwordConfirm, String deviceName) async {
-    this.token = await apiService.register(name, email, password, passwordConfirm, deviceName);
-    setToken(this.token);
-    this.isAuthenticated = true;
-    notifyListeners();
+    try {
+      final response = await apiService.register(
+          name, email, password, passwordConfirm, deviceName);
+
+      print('Successful Registration: ${response.toJson()}');
+
+      setToken(response.data?.apiToken ?? '');
+      this.isAuthenticated = true;
+      notifyListeners();
+    } catch (e) {
+      print('Jaycee: $e');
+    }
   }
 
   Future<void> login(String email, String password, String deviceName) async {
-    this.token = await apiService.login(email, password, deviceName);
-    setToken(this.token);
+    final response = await apiService.login(email, password, deviceName);
+
+    print('Successful Login: ${response.toJson()}');
+
+    setToken(response.data?.apiToken ?? '');
     this.isAuthenticated = true;
     notifyListeners();
   }

@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int selectedIndex = 0;
-  List<Widget> widgetOptions = [ products()];
+  List<Widget> widgetOptions = [products()];
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +27,10 @@ class _HomeState extends State<Home> {
             backgroundColor: Theme.of(context).primaryColor.withAlpha(0),
             elevation: 0,
             items: const <BottomNavigationBarItem>[
-
               BottomNavigationBarItem(
-                  icon: Icon(Icons.category),
-                  label: 'Products'),
+                  icon: Icon(Icons.category), label: 'Products'),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.logout),
-                  label: 'Log out')
+                  icon: Icon(Icons.logout), label: 'Log out')
             ],
             currentIndex: selectedIndex,
             onTap: onItemTapped,
@@ -46,7 +43,7 @@ class _HomeState extends State<Home> {
   Future<void> onItemTapped(int index) async {
     if (index == 1) {
       final AuthProvider provider =
-      Provider.of<AuthProvider>(context, listen: false);
+          Provider.of<AuthProvider>(context, listen: false);
 
       await provider.logOut();
     } else {

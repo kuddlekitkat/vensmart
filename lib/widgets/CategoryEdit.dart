@@ -5,7 +5,8 @@ class CategoryEdit extends StatefulWidget {
   final Category category;
   final Function categoryCallback;
 
-  CategoryEdit(this.category, this.categoryCallback, {Key? key}) : super(key: key);
+  CategoryEdit(this.category, this.categoryCallback, {Key? key})
+      : super(key: key);
 
   @override
   _CategoryEditState createState() => _CategoryEditState();
